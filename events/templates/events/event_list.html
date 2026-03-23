@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Calendar</title>
+    <link rel="stylesheet" href="{% static 'events/css/event_list.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">Sports Calendar</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="#">Sport</a></li>
+            <li><a href="#">Leagues</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Upcoming Events</h1>
+        <p>For detailed information about each event, click on the event row.</p>
+
+        {% if events %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Sport</th>
+                    <th>Home Team</th>
+                    <th>Away Team</th>
+                    <th>League</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for event in events %}
+                <tr class="clickable-row" onclick="window.location='/events/{{ event.event_id }}/'">
+                    <td>{{ event.event_date }}</td>
+                    <td>{{ event.event_time }}</td>
+                    <!-- related objects-->
+                    <td>{{ event.sport.sport_name }}</td>
+                    <td>{{ event.home_team.team_name }}</td>
+                    <td>{{ event.away_team.team_name }}</td>
+                    <!-- If value is empty display "--" -->
+                    <td>{{ event.league.league_name|default:"--" }}</td>
+                    <td>{{ event.venue.venue_name|default:"--" }}</td>
+                    <td>
+                        <span class="status status-{{ event.event_status }}">
+                            {{ event.event_status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="no-events">No events found.</p>
+        {% endif %}
+
+    </div>
+
+
+
+
+</body>
+</html>

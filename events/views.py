@@ -4,6 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.db import IntegrityError
 
+from django.shortcuts import render
+
 from .models import Event
 
 # Creates a new event
@@ -84,7 +86,7 @@ def event_list(request):
         for e in events
     ]
 
-    return JsonResponse({'events': data})
+    return render(request, 'events/event_list.html', {'events': events})
 
 # returns details of a single event by ID, with related data
 @require_http_methods(["GET"])
@@ -99,15 +101,7 @@ def event_detail(request, pk):
     except Event.DoesNotExist:
         return JsonResponse({'error': 'Event not found'}, status=404)
 
-    return JsonResponse({
-        'event_id': event.event_id,
-        'event_date': str(event.event_date),
-        'event_time': str(event.event_time),
-        'sport': event.sport.sport_name,
-        'league': event.league.league_name if event.league else None,
-        'venue': event.venue.venue_name if event.venue else None,
-        'home_team': event.home_team.team_name,
-        'away_team': event.away_team.team_name,
-        'event_description': event.event_description,
-        'event_status': event.event_status,
-    })
+    return render(request, 'events/event_detail.html', {'event': event})
+
+def home(request):
+    return render(request, 'events/home.html')

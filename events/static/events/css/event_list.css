@@ -1,0 +1,127 @@
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+body {
+    font-family: Arial;
+    background-color: #f5f5f5;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*Navigation bar*/
+nav {
+    background-color: #540804;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    width: 100%;
+}
+
+nav .logo {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 22px;
+}
+
+nav ul li a {
+    color: #ef9f9f;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+nav ul li a:hover { 
+    color: rgb(244, 232, 232); 
+    text-decoration: underline; 
+}
+
+.container {
+    max-width: 1100px;
+    margin: 27px auto;
+    padding: 0 16px;
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 17px;
+    color: #1a1a2e;
+}
+
+p {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 17px;
+    color: #1a1a2e;
+}
+
+
+/*Table section*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgb(250, 246, 246);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+thead {
+    background-color: #541818;
+    color: white;
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 16px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #d8d6d6;
+}
+
+tbody tr:hover {
+    background-color: #eef2ff;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    /* scheduled -> Scheduled */
+    text-transform: capitalize;
+}
+
+/* depends on status will change it's color */
+.status-scheduled  { background: #dbeafe; color: #2a2f90; }
+.status-live       { background: #dcfce7; color: #15803d; }
+.status-finished   { background: #f3f4f6; color: #6b7280; }
+.status-postponed  { background: #fef9c3; color: #484817; }
+.status-cancelled  { background: #fee2e2; color: #b91c1c; }
+
+.no-events {
+    text-align: center;
+    padding: 36px;
+    color: #999;
+}
+
+

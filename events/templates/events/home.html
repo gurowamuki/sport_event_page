@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Event Calendar</title>
+    <link rel="stylesheet" href="{% static 'events/css/home.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">Sports Calendar</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="#">Sport</a></li>
+            <li><a href="#">Leagues</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="card">
+        <img src="{% static 'events/images/home.jpg' %}" alt="Sport Event">
+        <div class="description">
+            Discover and keep track of all your favorite sports events in one place. 
+            Stay updated with the latest schedules, venues, and teams. Never miss a game again!
+            <br>
+            <a href="/events/">View Events</a>
+        </div>
+        
+    </div>
+</body>
+</html>

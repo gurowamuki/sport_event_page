@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details</title>
+    <link rel="stylesheet" href="{% static 'events/css/event_detail.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">Sports Calendar</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="#">Sport</a></li>
+            <li><a href="#">Leagues</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
+    <a href="/events/" class="back_link">← Back to Events</a>
+
+    <div class="container"> 
+        <h1>{{ event.home_team.team_name }} vs {{ event.away_team.team_name }}</h1>
+
+        <div class="detail-card">
+            <div class="detail-row">
+                <span class="detail-label">Date</span>
+                <span class="detail-value">{{ event.event_date }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Time</span>
+                <span class="detail-value">{{ event.event_time }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Sport</span>
+                <span class="detail-value">{{ event.sport.sport_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Home Team</span>
+                <span class="detail-value">{{ event.home_team.team_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Away Team</span>
+                <span class="detail-value">{{ event.away_team.team_name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">League</span>
+                <span class="detail-value">{{ event.league.league_name|default:"--" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Venue</span>
+                <span class="detail-value">{{ event.venue.venue_name|default:"--" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value">
+                    <span class="status status-{{ event.event_status }}">
+                        {{ event.event_status }}
+                    </span>
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Description</span>
+                <span class="detail-value">{{ event.event_description|default:"--" }}</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
