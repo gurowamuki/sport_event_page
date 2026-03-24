@@ -1,0 +1,20 @@
+AI Usage Explanation
+
+* Used during the design stage of the database to improve an already existing solution:
+After creating the first database schema, I used AI to suggest possible improvements that would make the structure more similar to real-world projects. Based on these suggestions, an additional table called "League" was added to the database schema.
+
+* Used to generate example SQL INSERT statements for populating the database with sample data:
+This was done because the time for completing the task was limited and I wanted to focus mainly on implementing backend functionality rather than manually preparing large amounts of test data.
+
+! It is important to note that the generated data was reviewed, because AI-generated content may contain inconsistencies or unrealistic values. 
+! For example, in some cases the generated events were marked as currently in progress even though their dates were already in the past. Therefore, verification and correction of the generated results were necessary.
+
+* Used to create a template for README.md file:
+For better performce and user-friendly style I've asked to generate a teamplate, which I rewrite for my project.
+
+! Assumptions & Decisions was improved by Claude for better explanation than the original text
+
+* Used to implement Status column design:
+Help to implement color of status depending on it's content
+
+
