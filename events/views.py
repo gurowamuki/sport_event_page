@@ -1,6 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.db import IntegrityError
 
@@ -9,7 +10,6 @@ from django.shortcuts import render
 from .models import Event
 
 # Creates a new event
-@csrf_exempt # disable CSRF protection (no login required)
 @require_http_methods(["POST"])
 def event_create(request):
     # Parse JSON body and handle errors
@@ -64,6 +64,7 @@ def event_create(request):
     }, status=201)
 
 # returns a list of all events with related data
+@ensure_csrf_cookie # sends cookie to client 
 @require_http_methods(["GET"])
 def event_list(request):
     # select_related to optimize queries by fetching related objects (with join)
@@ -89,6 +90,7 @@ def event_list(request):
     return render(request, 'events/event_list.html', {'events': events})
 
 # returns details of a single event by ID, with related data
+@ensure_csrf_cookie # sends cookie to client 
 @require_http_methods(["GET"])
 def event_detail(request, pk):
 
