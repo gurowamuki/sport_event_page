@@ -1,13 +1,13 @@
 # Sports Calendar
  
-A Django web application for browsing and managing sports events. Users can view upcoming and past events across multiple sports (football, ice hockey, basketball), see event details including teams, venues, leagues, and results, and create new events via a JSON API endpoint.
+A Django web application for browsing and managing sports events. Users can view upcoming and past events across multiple sports (football, ice hockey, basketball), see event details including teams, venues, leagues, and results, and create new events via form.
 
 ## Features
  
 - Home page with navigation to the events calendar
 - Event list view showing all events with sport, teams, league, venue and status
 - Event detail view with full information including match results for finished games
-- REST endpoint to create new events (`POST /events/create/`)
+- Form-based event creation (`/events/create/`)
 - PostgreSQL backend with a normalised schema covering countries, cities, venues, sports, leagues, teams, events, and results
 
 ---
@@ -32,6 +32,7 @@ sports_calendar/
 │   ├── models.py            # ORM models (mapped to SQL schema)
 │   ├── views.py             # Views: home, event_list, event_detail, event_create
 │   ├── urls.py              # App-level URL routing
+│   ├── forms.py             # EventForm with home/away team validation
 │   ├── templates/events/    # HTML templates
 │   └── static/events/       # CSS and images
 ├── sports_calendar/         # Project config
@@ -144,32 +145,24 @@ Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 | `/`                     | `home`           | Home / landing page                    |
 | `/events/`              | `event_list`     | List of all events                     |
 | `/events/<id>/`         | `event_detail`   | Detail view for a single event         |
-| `/events/create/`       | `event_create`   | Create a new event (POST, JSON body)   |
+| `/events/create/`       | `event_create`   | Create a new event (GET form / POST)   |
  
-### Creating an event (example)
+## Creating an Event via Postman
 
 ### 1. Open Postman.com
 
-Select GET method and in URL section insert: http://127.0.0.1:8000/events/
-
-### 2. Get Cookie
-Inside Cookies section we can find:
-* Name: csrftoken
-* Vakue: <generated_value> 
-
-Copy generated value
-
-### 3. Creating Event
-
-Select POST method and add: http://127.0.0.1:8000/events/create/
-
-In headers add: 
-* Key: X-CSRFToken
-* Value: <generated_value> 
-
-Insert inside body section:
-
-```
+Send a `GET` request to `http://127.0.0.1:8000/events/` and open the **Cookies** tab. Copy the `csrftoken` value.
+ 
+### 2. Submit the form via POST
+ 
+Send a `POST` request to `http://127.0.0.1:8000/events/create/`
+ 
+Add a header:
+- **Key:** `X-CSRFToken`
+- **Value:** `<your csrftoken value>`
+ 
+Example body (form-data or JSON):
+```json
 {
   "event_date": "2026-03-30",
   "event_time": "18:30:00",
