@@ -1,27 +1,70 @@
-import json
+# import json
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
-from django.db import IntegrityError
+# from django.db import IntegrityError
 
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from .models import Event
+from .forms import EventForm
 
 # Creates a new event
-@require_http_methods(["POST"])
+@ensure_csrf_cookie
+@require_http_methods(["GET", "POST"])
 def event_create(request):
+    if request.method == "POST":
+        # creates a form instance with user input
+        form = EventForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('event_list')
+    else:
+        # empty form for GET request
+        form = EventForm()
+
+    return render(request, 'events/event_create.html', {'form': form})
+
+
+# returns a list of all events with related data
+@ensure_csrf_cookie # sends cookie to client 
+@require_http_methods(["GET"])
+def event_list(request):
+    # select_related to optimize queries by fetching related objects (with join)
+    events = (
+        Event.objects.select_related('sport', 'league', 'venue', 'home_team', 'away_team').all()
+    )
+
+    return render(request, 'events/event_list.html', {'events': events})
+
+# returns details of a single event by ID, with related data
+@ensure_csrf_cookie # sends cookie to client 
+@require_http_methods(["GET"])
+def event_detail(request, pk):
+
+    try:
+        event = (
+            Event.objects
+            .select_related('sport', 'league', 'venue', 'home_team', 'away_team')
+            .get(pk=pk)
+        )
+    except Event.DoesNotExist:
+        return JsonResponse({'error': 'Event not found'}, status=404)
+
+    return render(request, 'events/event_detail.html', {'event': event})
+
+def home(request):
+    return render(request, 'events/home.html')
+
+
+"""
     # Parse JSON body and handle errors
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON body'}, status=400)
 
-    required_fields = [
-        'event_date', 'event_time', 'sport_id',
-        'home_team_id', 'away_team_id'
-    ]
+    required_fields = ['event_date', 'event_time', 'sport_id', 'home_team_id', 'away_team_id']
     # Check for missing required fields
     missing = [f for f in required_fields if data.get(f) is None]
     if missing:
@@ -63,47 +106,4 @@ def event_create(request):
         'message': 'Event created successfully',
     }, status=201)
 
-# returns a list of all events with related data
-@ensure_csrf_cookie # sends cookie to client 
-@require_http_methods(["GET"])
-def event_list(request):
-    # select_related to optimize queries by fetching related objects (with join)
-    events = (
-        Event.objects.select_related('sport', 'league', 'venue', 'home_team', 'away_team').all()
-    )
-
-    data = [
-        {
-            'event_id': e.event_id,
-            'event_date': str(e.event_date),
-            'event_time': str(e.event_time),
-            'sport': e.sport.sport_name,
-            'league': e.league.league_name if e.league else None,
-            'venue': e.venue.venue_name if e.venue else None,
-            'home_team': e.home_team.team_name,
-            'away_team': e.away_team.team_name,
-            'event_status': e.event_status,
-        }
-        for e in events
-    ]
-
-    return render(request, 'events/event_list.html', {'events': events})
-
-# returns details of a single event by ID, with related data
-@ensure_csrf_cookie # sends cookie to client 
-@require_http_methods(["GET"])
-def event_detail(request, pk):
-
-    try:
-        event = (
-            Event.objects
-            .select_related('sport', 'league', 'venue', 'home_team', 'away_team')
-            .get(pk=pk)
-        )
-    except Event.DoesNotExist:
-        return JsonResponse({'error': 'Event not found'}, status=404)
-
-    return render(request, 'events/event_detail.html', {'event': event})
-
-def home(request):
-    return render(request, 'events/home.html')
+"""

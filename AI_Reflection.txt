@@ -17,4 +17,4 @@ For better performce and user-friendly style I've asked to generate a teamplate,
 * Used to implement Status column design:
 Help to implement color of status depending on it's content
 
-
+* Used to implement error messages during form creation in html

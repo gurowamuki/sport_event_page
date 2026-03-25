@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Calendar</title>
+    <link rel="stylesheet" href="{% static 'events/css/event_create.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">Sports Calendar</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="#">Sport</a></li>
+            <li><a href="#">Leagues</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
+    <a href="/events/" class="back_link">← Back to Events</a>
+
+
+    <div class="container">
+        <h1>Create New Event</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <!-- Render form error: home_team and away_team problem; non_field_errors: error for the whole form -->
+            {% if form.non_field_errors %}
+                <div class="error-banner">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Loop through form fields and display them with error messages if any -->
+            {% for field in form %}
+                <!-- If the field has errors, create error class  -->
+                <div class="field {% if field.errors %}field-error{% endif %}">
+                    <!--print label -->
+                    {{ field.label_tag }}
+                    <!--input field -->
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <span class="field-error-msg">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit">Create Event</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

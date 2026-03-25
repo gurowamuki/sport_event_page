@@ -51,6 +51,7 @@ nav ul li a:hover {
     max-width: 1100px;
     margin: 27px auto;
     padding: 0 16px;
+    text-align: center;
 }
 
 h1 {
@@ -65,6 +66,21 @@ p {
     text-align: center;
     margin-bottom: 17px;
     color: #1a1a2e;
+}
+
+.btn_create {
+    display: inline-block;
+    margin: 25px auto;
+    padding: 10px 16px;
+    background-color: #541818;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.btn_create:hover {
+    background-color: #7a2222;
 }
 
 
@@ -123,5 +139,4 @@ tbody tr:hover {
     padding: 36px;
     color: #999;
 }
-
 
