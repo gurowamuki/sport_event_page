@@ -16,24 +16,14 @@
             <li><a href="#">Sport</a></li>
             <li><a href="#">Leagues</a></li>
             <li><a href="#">About</a></li>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            {% else %}
-                <li><a href="{% url 'login' %}">Login</a></li>
-                <li><a href="{% url 'register' %}">Register</a></li>
-            {% endif %}
         </ul>
     </nav>
 
-    <a href="/events/" class="back_link">← Back to Events</a>
-
-
     <div class="container">
-        <h1>Create New Event</h1>
+        <h1>Login</h1>
 
         <form method="post">
             {% csrf_token %}
-            <!-- Render form error: home_team and away_team problem; non_field_errors: error for the whole form -->
             {% if form.non_field_errors %}
                 <div class="error-banner">
                     {% for error in form.non_field_errors %}
@@ -41,14 +31,10 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            
-            <!-- Loop through form fields and display them with error messages if any -->
+
             {% for field in form %}
-                <!-- If the field has errors, create error class  -->
                 <div class="field {% if field.errors %}field-error{% endif %}">
-                    <!--print label -->
                     {{ field.label_tag }}
-                    <!--input field -->
                     {{ field }}
                     {% for error in field.errors %}
                         <span class="field-error-msg">{{ error }}</span>
@@ -57,9 +43,11 @@
             {% endfor %}
 
             <div class="form-actions">
-                <button type="submit">Create Event</button>
+                <button type="submit">Login</button>
             </div>
         </form>
+
+        <p><a href="{% url 'register' %}">Don't have an account? Register</a></p>
     </div>
 </body>
 </html>

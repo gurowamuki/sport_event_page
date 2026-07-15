@@ -2,6 +2,9 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login as auth_login
 # from django.db import IntegrityError
 
 from django.shortcuts import redirect, render
@@ -10,6 +13,7 @@ from .models import Event
 from .forms import EventForm
 
 # Creates a new event
+@login_required
 @ensure_csrf_cookie
 @require_http_methods(["GET", "POST"])
 def event_create(request):
@@ -55,3 +59,17 @@ def event_detail(request, pk):
 
 def home(request):
     return render(request, 'events/home.html')
+
+# registers a new user and logs them in
+@require_http_methods(["GET", "POST"])
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth_login(request, user)
+            return redirect('event_list')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'events/register.html', {'form': form})
