@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 
 class Country(models.Model):
@@ -34,7 +36,7 @@ class Venue(models.Model):
     venue_id = models.AutoField(primary_key=True)
     venue_name = models.CharField(max_length=150)
     venue_address = models.CharField(max_length=255, null=True, blank=True)
-    capacity = models.IntegerField(null=True, blank=True) # Forms allow empty & Database stores NULL
+    capacity = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)]) # Forms allow empty & Database stores NULL
     city = models.ForeignKey(
         City,
         on_delete=models.RESTRICT,
@@ -163,6 +165,10 @@ class Event(models.Model):
         managed = False
         db_table = 'event'
 
+    def clean(self):
+        if self.home_team_id and self.away_team_id and self.home_team_id == self.away_team_id:
+            raise ValidationError('Home team and away team must be different.')
+
     def __str__(self):
         return f"{self.home_team} vs {self.away_team} on {self.event_date}"
 
@@ -173,8 +179,8 @@ class EventResult(models.Model):
         on_delete=models.RESTRICT,
         db_column='_event_id'
     )
-    home_score = models.IntegerField()
-    away_score = models.IntegerField()
+    home_score = models.IntegerField(validators=[MinValueValidator(0)])
+    away_score = models.IntegerField(validators=[MinValueValidator(0)])
     notes = models.TextField(null=True, blank=True)
 
     class Meta:

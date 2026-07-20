@@ -72,7 +72,7 @@ def test_event_detail_returns_404_for_missing_event(client):
     response = client.get('/events/999999/')
 
     assert response.status_code == 404
-    assert response.json() == {'error': 'Event not found'}
+    assert b'Event Not Found' in response.content
 
 
 def test_event_list_includes_created_event(client, two_teams):

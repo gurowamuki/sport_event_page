@@ -1,11 +1,8 @@
-# import json
-from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login as auth_login
-# from django.db import IntegrityError
 
 from django.shortcuts import redirect, render
 
@@ -36,7 +33,8 @@ def event_create(request):
 def event_list(request):
     # select_related to optimize queries by fetching related objects (with join)
     events = (
-        Event.objects.select_related('sport', 'league', 'venue', 'home_team', 'away_team').all()
+        Event.objects.select_related('sport', 'league', 'venue', 'home_team', 'away_team')
+        .order_by('event_date', 'event_time')
     )
 
     return render(request, 'events/event_list.html', {'events': events})
@@ -53,7 +51,7 @@ def event_detail(request, pk):
             .get(pk=pk)
         )
     except Event.DoesNotExist:
-        return JsonResponse({'error': 'Event not found'}, status=404)
+        return render(request, 'events/404.html', status=404)
 
     return render(request, 'events/event_detail.html', {'event': event})
 

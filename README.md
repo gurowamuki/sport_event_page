@@ -55,15 +55,6 @@ sports_calendar/
 - PostgreSQL 13+ running locally (or a remote instance)
  
 ---
-
-## Setup & Installation
- 
-### Prerequisites
- 
-- Python 3.12+
-- PostgreSQL 13+ running locally (or a remote instance)
- 
----
  
 ### 1. Clone the repository
  
