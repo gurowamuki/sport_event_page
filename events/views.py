@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login as auth_login
 
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Event
-from .forms import EventForm
+from .forms import EventForm, EventResultForm
 
 # Creates a new event
 @login_required
@@ -47,13 +47,64 @@ def event_detail(request, pk):
     try:
         event = (
             Event.objects
-            .select_related('sport', 'league', 'venue', 'home_team', 'away_team')
+            .select_related('sport', 'league', 'venue', 'home_team', 'away_team', 'eventresult')
             .get(pk=pk)
         )
     except Event.DoesNotExist:
         return render(request, 'events/404.html', status=404)
 
-    return render(request, 'events/event_detail.html', {'event': event})
+    result = getattr(event, 'eventresult', None)
+    return render(request, 'events/event_detail.html', {'event': event, 'result': result})
+
+# edits an existing event
+@login_required
+@require_http_methods(["GET", "POST"])
+def event_edit(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+
+    if request.method == "POST":
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            return redirect('event_detail', pk=event.pk)
+    else:
+        form = EventForm(instance=event)
+
+    return render(request, 'events/event_edit.html', {'form': form, 'event': event})
+
+# deletes an event, along with its result if one was recorded
+@login_required
+@require_http_methods(["GET", "POST"])
+def event_delete(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    result = getattr(event, 'eventresult', None)
+
+    if request.method == "POST":
+        if result:
+            result.delete()
+        event.delete()
+        return redirect('event_list')
+
+    return render(request, 'events/event_delete.html', {'event': event, 'result': result})
+
+# records or edits the result for an event
+@login_required
+@require_http_methods(["GET", "POST"])
+def event_result_edit(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    result = getattr(event, 'eventresult', None)
+
+    if request.method == "POST":
+        form = EventResultForm(request.POST, instance=result)
+        if form.is_valid():
+            event_result = form.save(commit=False)
+            event_result.event = event
+            event_result.save()
+            return redirect('event_detail', pk=event.pk)
+    else:
+        form = EventResultForm(instance=result)
+
+    return render(request, 'events/event_result_form.html', {'form': form, 'event': event})
 
 def home(request):
     return render(request, 'events/home.html')

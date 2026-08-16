@@ -104,3 +104,15 @@ nav ul li a:hover {
     font-size: 15px;
     color: #333;
 }
+
+/* Edit/Delete/Result actions */
+.form-actions {
+    display: flex;
+    gap: 20px;
+    max-width: 600px;
+    margin-top: 18px;
+}
+
+.form-actions .back_link {
+    margin: 0;
+}

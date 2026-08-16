@@ -106,16 +106,26 @@ Create a PostgreSQL database matching the name in your `.env`:
 ```sql
 CREATE DATABASE sports_calendar;
 ```
- 
-#### Setup using SQL file:
- 
-Load the schema and seed data directly from the provided SQL file:
+
+> **Two separate steps are required below — both are necessary, neither replaces the other:**
+> - **Step A** creates Django's own built-in tables (`auth_user`, `django_session`, etc.), required for login, registration, and the admin panel.
+> - **Step B** creates this app's domain tables (`country`, `city`, `venue`, `sport`, `league`, `team`, `event`, `event_result`) and seeds them with sample data. These models are `managed = False` (see [Assumptions & Decisions](#assumptions--decisions)), so Django's migrations never create them — skipping this step leaves the app running but throwing `relation "event" does not exist` on the first page that queries one.
+
+#### Step A: Apply Django's migrations
+
+```bash
+python manage.py migrate
+```
+
+#### Step B: Load the schema + seed data from the SQL file
  
 ```bash
 psql -U postgres -d sports_calendar -f db/sports_calendar.sql
 ```
  
-This creates all tables and populates them with sample data (countries, cities, venues, sports, leagues, teams, and events).
+This creates all domain tables and populates them with sample data (countries, cities, venues, sports, leagues, teams, and events).
+
+*(If you use the [Docker setup](#run-with-docker) below instead, both steps already happen automatically — Step A runs on container start, Step B runs once via Postgres's `docker-entrypoint-initdb.d` mechanism.)*
  
 ---
  
@@ -129,6 +139,25 @@ Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000).
  
 ---
 
+## Run with Docker
+
+As an alternative to the manual setup above, the whole stack (Django + PostgreSQL) can be run with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+This builds the app image, starts a PostgreSQL container seeded automatically from `db/sports_calendar.sql` (only on first run, against a fresh volume), waits for the database to be healthy, then starts the app. Open your browser at [http://localhost:8000](http://localhost:8000).
+
+To reset the seeded data and start over from scratch:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+---
+
 ## URL Routes
  
 | URL                     | View             | Description                            |
@@ -140,28 +169,34 @@ Open your browser at [http://127.0.0.1:8000](http://127.0.0.1:8000).
  
 ## Creating an Event via Postman
 
-### 1. Open Postman.com
+`event_create` requires an authenticated session (`@login_required`), so log in first and keep using the same Postman cookie jar for every request below — the `sessionid` cookie from login must be sent along with the CSRF token.
 
-Send a `GET` request to `http://127.0.0.1:8000/events/` and open the **Cookies** tab. Copy the `csrftoken` value.
- 
-### 2. Submit the form via POST
- 
+### 1. Log in
+
+Send a `GET` request to `http://127.0.0.1:8000/accounts/login/` and copy the `csrftoken` value from the **Cookies** tab, then send a `POST` request to the same URL with your `username`/`password` and that token in an `X-CSRFToken` header. Postman will store the resulting `sessionid` cookie automatically.
+
+### 2. Get a fresh CSRF token for the authenticated session
+
+Send a `GET` request to `http://127.0.0.1:8000/events/` and open the **Cookies** tab. Copy the (new) `csrftoken` value.
+
+### 3. Submit the form via POST
+
 Send a `POST` request to `http://127.0.0.1:8000/events/create/`
  
 Add a header:
 - **Key:** `X-CSRFToken`
 - **Value:** `<your csrftoken value>`
  
-Example body (form-data or JSON):
+Example body (form-data or JSON) — field names must match `EventForm`'s fields exactly:
 ```json
 {
   "event_date": "2026-03-30",
   "event_time": "18:30:00",
-  "sport_id": 1,
-  "home_team_id": 1,
-  "away_team_id": 2,
-  "league_id": 1,
-  "venue_id": 1,
+  "sport": 1,
+  "home_team": 1,
+  "away_team": 2,
+  "league": 1,
+  "venue": 1,
   "event_status": "scheduled"
 }
 ```
@@ -179,7 +214,7 @@ Because models are unmanaged, the SQL file (`db/sports_calendar.sql`) must be ru
 All `ForeignKey` fields in Django models use `on_delete=models.RESTRICT`. This mirrors the referential integrity intent of the SQL schema — for example, a country cannot be deleted if cities still reference it. This prevents accidental data loss through cascading deletes.
  
 ### CSRF handling
-The `event_list` and `event_detail` views use the `@ensure_csrf_cookie` decorator to send the CSRF token to the client. The `event_create` POST endpoint uses `@csrf_exempt` since it is designed for API consumption (e.g. from a separate frontend or curl).
+All views use the `@ensure_csrf_cookie` decorator to send the CSRF token to the client. No view is CSRF-exempt — `event_create` and every other state-changing view (`event_edit`, `event_delete`, `event_result_edit`) enforce Django's standard CSRF protection like any other form, and additionally require the user to be logged in (`@login_required`).
  
 ### Event status values
 The `event_status` field is constrained to: `scheduled`, `live`, `finished`, `postponed`, `cancelled`. This is enforced both at the database level (a `CHECK` constraint in SQL) and at the application level (Django field validation).

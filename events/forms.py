@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event
+from .models import Event, EventResult
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -15,3 +15,8 @@ class EventForm(forms.ModelForm):
         if home and away and home == away:
             raise forms.ValidationError('Home team and away team must be different.')
         return cleaned_data
+
+class EventResultForm(forms.ModelForm):
+    class Meta:
+        model = EventResult
+        fields = ['home_score', 'away_score', 'notes']

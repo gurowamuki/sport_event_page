@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Calendar</title>
+    <link rel="stylesheet" href="{% static 'events/css/event_create.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">Sports Calendar</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="#">Sport</a></li>
+            <li><a href="#">Leagues</a></li>
+            <li><a href="#">About</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <a href="{% url 'event_detail' event.event_id %}" class="back_link">← Back to Event</a>
+
+    <div class="container">
+        <h1>Delete Event</h1>
+
+        {% if result %}
+            <div class="error-banner">
+                <p>This event has a recorded result ({{ result.home_score }} : {{ result.away_score }}) — deleting the event will also delete that result.</p>
+            </div>
+        {% endif %}
+
+        <p>
+            Are you sure you want to delete
+            <strong>{{ event.home_team.team_name }} vs {{ event.away_team.team_name }}</strong>
+            on {{ event.event_date }}? This cannot be undone.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit">Delete</button>
+                <a href="{% url 'event_detail' event.event_id %}" class="back_link">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

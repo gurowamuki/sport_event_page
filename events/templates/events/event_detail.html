@@ -71,7 +71,29 @@
                 <span class="detail-label">Description</span>
                 <span class="detail-value">{{ event.event_description|default:"--" }}</span>
             </div>
+            {% if result %}
+            <div class="detail-row">
+                <span class="detail-label">Result</span>
+                <span class="detail-value">{{ result.home_score }} : {{ result.away_score }}</span>
+            </div>
+            {% if result.notes %}
+            <div class="detail-row">
+                <span class="detail-label">Result Notes</span>
+                <span class="detail-value">{{ result.notes }}</span>
+            </div>
+            {% endif %}
+            {% endif %}
         </div>
+
+        {% if user.is_authenticated %}
+        <div class="form-actions">
+            <a href="{% url 'event_edit' event.event_id %}" class="back_link">Edit</a>
+            <a href="{% url 'event_delete' event.event_id %}" class="back_link">Delete</a>
+            <a href="{% url 'event_result_edit' event.event_id %}" class="back_link">
+                {% if result %}Edit Result{% else %}Add Result{% endif %}
+            </a>
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>
