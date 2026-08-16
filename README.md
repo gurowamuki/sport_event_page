@@ -200,21 +200,3 @@ Example body (form-data or JSON) — field names must match `EventForm`'s fields
   "event_status": "scheduled"
 }
 ```
-
----
-## Assumptions & Decisions
- 
-### Unmanaged Django models (`managed = False`)
-All models are set to `managed = False`. This means Django does not own the database schema — the SQL file is the source of truth for table definitions. This approach was chosen to keep the SQL schema explicit and fully under developer control, and to allow the same schema to be used independently of Django (e.g. for direct SQL queries or other tools).
- 
-### SQL file as the primary setup method
-Because models are unmanaged, the SQL file (`db/sports_calendar.sql`) must be run to create the tables. The file also includes sample seed data (teams, leagues, events) so the application is immediately usable after setup without manual data entry.
- 
-### `RESTRICT` on foreign key deletion
-All `ForeignKey` fields in Django models use `on_delete=models.RESTRICT`. This mirrors the referential integrity intent of the SQL schema — for example, a country cannot be deleted if cities still reference it. This prevents accidental data loss through cascading deletes.
- 
-### CSRF handling
-All views use the `@ensure_csrf_cookie` decorator to send the CSRF token to the client. No view is CSRF-exempt — `event_create` and every other state-changing view (`event_edit`, `event_delete`, `event_result_edit`) enforce Django's standard CSRF protection like any other form, and additionally require the user to be logged in (`@login_required`).
- 
-### Event status values
-The `event_status` field is constrained to: `scheduled`, `live`, `finished`, `postponed`, `cancelled`. This is enforced both at the database level (a `CHECK` constraint in SQL) and at the application level (Django field validation).
